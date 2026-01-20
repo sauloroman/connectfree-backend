@@ -1,7 +1,8 @@
 import { ContactDatasource } from "../../../domain/datasources";
 import { AddContactDto, RemoveContactDto } from "../../../domain/dtos/contact.dto";
 import { Contact } from "../../../domain/entities";
-import { postgresPool } from "./database/postgres.pool";
+import { postgresPool } from "../database/postgres.pool";
+import { ContactMapper } from "../mappers";
 
 export class ContactDatasourcePostgres implements ContactDatasource {
     
@@ -14,13 +15,7 @@ export class ContactDatasourcePostgres implements ContactDatasource {
             `, [data.userId, data.contactUserId]);
 
             const row = result.rows[0]
-
-            return new Contact(
-                row.id,
-                row.user_id,
-                row.contact_id,
-                row.created_at
-            )
+            return ContactMapper.fromRow(row)
         } catch ( error: any ) {
             throw new Error('[ContactDatasourcePostgres] - Error al insertar contacto nuevo', error)
         }
@@ -46,15 +41,7 @@ export class ContactDatasourcePostgres implements ContactDatasource {
                 WHERE user_id = $1  
             `, [userId])
 
-            return result.rows.map( row => (
-                new Contact(
-                    row.id,
-                    row.user_id,
-                    row.contact_id,
-                    row.created_at 
-                ) 
-            ))
-
+            return result.rows.map( ContactMapper.fromRow )
         } catch( error: any ) {
             throw new Error('[ContactDatasourcePostgres] - Error al obtener los contactos del usuario', error)
         }

@@ -1,7 +1,8 @@
 import { UserDatasource } from "../../../domain/datasources";
 import { CreateUserDto, SearchUserDto } from "../../../domain/dtos/user.dto";
 import { User } from "../../../domain/entities";
-import { postgresPool } from "./database/postgres.pool";
+import { postgresPool } from "../database/postgres.pool";
+import { UserMapper } from "../mappers/user.mapper";
 
 export class UserDatasourcePostgres implements UserDatasource {
     
@@ -15,15 +16,7 @@ export class UserDatasourcePostgres implements UserDatasource {
             `, [data.username, data.email, data.password])
 
             const row = result.rows[0]
-
-            return new User(
-                row.id,
-                row.username,
-                row.email,
-                row.password,
-                row.created_at
-            )
-
+            return UserMapper.fromRow(row)
         } catch( error: any ) {
             throw new Error('[UserDatasourcePostgres] - Error al insertar usuario nuevo', error)
         }
@@ -38,17 +31,9 @@ export class UserDatasourcePostgres implements UserDatasource {
                 WHERE id = $1    
             `, [id])
 
-            if ( result.rows.length === 0 ) return null
-
-            const row = result.rows[0]
-
-            return new User(
-                row.id,
-                row.username,
-                row.email,
-                row.password,
-                row.created_at
-            )
+            return result.rows.length === 0 
+                ? null
+                : UserMapper.fromRow(result.rows[0])
 
         } catch( error: any ){
             throw new Error('[UserDatasourcePostgres] - Error al obtener usuario por id', error)
@@ -64,17 +49,9 @@ export class UserDatasourcePostgres implements UserDatasource {
                 WHERE email = $1
             `, [email])
 
-            if ( result.rows.length === 0 ) return null
-
-            const row = result.rows[0]
-
-            return new User(
-                row.id,
-                row.username,
-                row.email,
-                row.password,
-                row.created_at
-            )
+            return result.rows.length === 0 
+                ? null
+                : UserMapper.fromRow(result.rows[0])
 
         } catch( error: any ) {
             throw new Error('[UserDatasourcePostgres] - Error al obtener usuario por email', error)
@@ -83,7 +60,6 @@ export class UserDatasourcePostgres implements UserDatasource {
 
     async searchByUsername(data: SearchUserDto): Promise<User[]> {
         try {
-
             const result = await postgresPool.query(`
                 SELECT *
                 FROM users
@@ -91,14 +67,7 @@ export class UserDatasourcePostgres implements UserDatasource {
                 LIMIT $2
             `, [`%${data.query}%`, data.limit ?? 10])
 
-            return result.rows.map(row => (new User(
-                row.id,
-                row.username,
-                row.email,
-                row.password,
-                row.created_at
-            )))
-            
+            return result.rows.map(UserMapper.fromRow)
         } catch( error: any ) {
              throw new Error('[UserDatasourcePostgres] - Error al buscar usuarios', error)
         }

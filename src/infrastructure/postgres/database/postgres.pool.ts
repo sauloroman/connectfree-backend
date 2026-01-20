@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { EnvAdapter } from '../../../../config/plugin'
+import { EnvAdapter } from '../../../config/plugin'
 
 export const postgresPool = new Pool(
   EnvAdapter.DATABASE_URL

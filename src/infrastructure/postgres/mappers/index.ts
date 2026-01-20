@@ -1,0 +1,4 @@
+export { UserMapper } from './user.mapper'
+export { ContactMapper } from './contact.mapper'
+export { MessageMapper } from './message.mapper'
+export { ConversationMapper } from './conversation.mapper'

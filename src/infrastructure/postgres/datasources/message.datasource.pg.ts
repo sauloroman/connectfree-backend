@@ -1,7 +1,8 @@
 import { MessageDatasource } from "../../../domain/datasources";
 import { SendMessageDto, MessageHistoryDto } from "../../../domain/dtos/message.dto";
 import { Message } from "../../../domain/entities";
-import { postgresPool } from "./database/postgres.pool";
+import { postgresPool } from "../database/postgres.pool";
+import { MessageMapper } from "../mappers";
 
 export class MessageDatasourcePostgres implements MessageDatasource {
     
@@ -14,16 +15,7 @@ export class MessageDatasourcePostgres implements MessageDatasource {
                 RETURNING *
             `, [data.conversationId, data.senderId, data.content])
 
-            const row = result.rows[0]
-
-            return new Message(
-                row.id,
-                row.conversation_id,
-                row.sender_id,
-                row.content,
-                row.created_at
-            )
-
+            return MessageMapper.fromRow(result.rows[0])
         } catch ( error: any ) {
             throw new Error('[MessageDatasourcePostgres] - Error al guardar mensaje', error)
         }
@@ -39,13 +31,7 @@ export class MessageDatasourcePostgres implements MessageDatasource {
               LIMIT $2 OFFSET $3
             `, [ data.conversationId, data.limit ?? 50, data.offset ?? 0])
 
-            return result.rows.map( row => (new Message(
-                row.id,
-                row.conversation_id,
-                row.sender_id,
-                row.content,
-                row.created_at
-            )))
+            return result.rows.map( MessageMapper.fromRow )
 
         } catch( error: any ) {
             throw new Error('[MessageDatasourcePostgres] - Error al encontrar mensaje por conversación', error)

@@ -1,7 +1,8 @@
 import { ConversationDatasource } from '../../../domain/datasources/conversation.datasource'
 import { CreateConversationDto, ConversationBetweenUsersDto } from '../../../domain/dtos/conversation.dto'
 import { Conversation } from '../../../domain/entities/conversation.entity'
-import { postgresPool } from './database/postgres.pool'
+import { postgresPool } from '../database/postgres.pool'
+import { ConversationMapper } from '../mappers'
 
 export class ConversationDatasourcePostgres extends ConversationDatasource {
 
@@ -19,20 +20,15 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
 
             for (const userId of data.participants) {
                 await client.query(
-                    `
-            INSERT INTO conversation_participants (conversation_id, user_id)
-            VALUES ($1, $2)
-          `,
-                    [conversationId, userId]
-                )
+                `
+                    INSERT INTO conversation_participants (conversation_id, user_id)
+                    VALUES ($1, $2)
+                `, [conversationId, userId] )
             }
 
             await client.query('COMMIT')
 
-            return new Conversation(
-                conversationId,
-                convResult.rows[0].created_at
-            )
+            return ConversationMapper.fromRow(convResult.rows[0])
 
         } catch (error: any) {
             await client.query('ROLLBACK')
@@ -48,11 +44,9 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
             [conversationId]
         )
 
-        if (result.rows.length === 0) return null
-
-        const row = result.rows[0]
-
-        return new Conversation(row.id, row.created_at)
+        return result.rowCount
+        ? ConversationMapper.fromRow(result.rows[0])
+        : null
     }
 
     async findConversationBetweenUsers(
@@ -67,11 +61,9 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
             WHERE p1.user_id = $1 AND p2.user_id = $2
         `, [data.userAId, data.userBId])
 
-        if (result.rows.length === 0) return null
-
-        const row = result.rows[0]
-
-        return new Conversation(row.id, row.created_at)
+        return result.rowCount
+        ? ConversationMapper.fromRow(result.rows[0])
+        : null
     }
 
     async getUserConversations(userId: number): Promise<Conversation[]> {
@@ -83,8 +75,6 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
             WHERE cp.user_id = $1
         `, [userId] )
 
-        return result.rows.map(
-            row => new Conversation(row.id, row.created_at)
-        )
+        return result.rows.map( ConversationMapper.fromRow)
     }
 }
