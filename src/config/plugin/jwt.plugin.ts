@@ -15,12 +15,10 @@ export class JwtAdapter {
   })
 
   public static validateToken = async <T>( token: string ): Promise<T | null> => new Promise( res => {
-
     jwt.verify( token, JWT_SEED, ( err, decode ) => {
       if ( err ) return res( null )
       res( decode as T )
     })
-
   })
 
 } 

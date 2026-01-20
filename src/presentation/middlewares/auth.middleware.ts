@@ -5,6 +5,9 @@ export class AuthMiddleware {
 
     public static validateLoggedUser() {
         return async ( req: Request, res: Response, next: NextFunction ) => {
+            if ( req.method === 'GET' || req.method === 'PATCH' || req.method === 'DELETE') {
+                req.body = {}
+            }
 
             const authHeader = req.headers.authorization
 
@@ -12,7 +15,7 @@ export class AuthMiddleware {
                 return res.status(401).json({ message: 'Inicia sesión primero' })
             }
 
-            const [token] = authHeader.split(' ')
+            const token = authHeader.split(' ').at(1) || ''
 
             if (!authHeader.startsWith('Bearer ') || !token) {
                 return res.status(401).json({ message: 'No hay token válido' })
@@ -23,8 +26,9 @@ export class AuthMiddleware {
                 req.body.user = { id: payload?.id ?? '' }
 
                 next()
-            } catch {
-                return res.status(401).json({ message: 'Invalid or expired token' })
+            } catch(error: any) {
+                console.log(error)
+                return res.status(401).json({ message: 'Token Inválido o Expirado' })
             }
 
         }

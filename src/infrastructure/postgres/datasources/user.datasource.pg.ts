@@ -63,7 +63,7 @@ export class UserDatasourcePostgres implements UserDatasource {
             const result = await postgresPool.query(`
                 SELECT *
                 FROM users
-                WHERE username ILIKE $1
+                WHERE username ILIKE $1 OR email ILIKE $1
                 LIMIT $2
             `, [`%${data.query}%`, data.limit ?? 10])
 

@@ -18,8 +18,8 @@ export class UserRoutes {
         router.post('/register', this.controller.register)
         router.post('/login', this.controller.login )
 
-        router.get('/me', [AuthMiddleware.validateLoggedUser], this.controller.profile)
-        router.get('/search', [AuthMiddleware.validateLoggedUser], this.controller.search)
+        router.get('/me', [AuthMiddleware.validateLoggedUser()], this.controller.profile)
+        router.get('/search', [AuthMiddleware.validateLoggedUser()], this.controller.search)
 
         return router
     }
