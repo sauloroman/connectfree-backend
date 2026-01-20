@@ -1,0 +1,1 @@
+export { RegExp } from './reg-exp.util'
