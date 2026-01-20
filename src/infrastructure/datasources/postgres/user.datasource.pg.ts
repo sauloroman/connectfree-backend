@@ -1,23 +1,107 @@
 import { UserDatasource } from "../../../domain/datasources";
 import { CreateUserDto, SearchUserDto } from "../../../domain/dtos/user.dto";
 import { User } from "../../../domain/entities";
+import { postgresPool } from "./database/postgres.pool";
 
 export class UserDatasourcePostgres implements UserDatasource {
     
     async create(data: CreateUserDto): Promise<User> {
-        throw new Error("Method not implemented.");
+        try {
+            
+            const result = await postgresPool.query(`
+                INSERT INTO users (username, email, password)
+                VALUES ($1, $2, $3) 
+                RETURNING *   
+            `, [data.username, data.email, data.password])
+
+            const row = result.rows[0]
+
+            return new User(
+                row.id,
+                row.username,
+                row.email,
+                row.password,
+                row.created_at
+            )
+
+        } catch( error: any ) {
+            throw new Error('[UserDatasourcePostgres] - Error al insertar usuario nuevo', error)
+        }
     }
 
     async findById(id: number): Promise<User | null> {
-        throw new Error("Method not implemented.");
+        try {
+
+            const result = await postgresPool.query(`
+                SELECT *
+                FROM users
+                WHERE id = $1    
+            `, [id])
+
+            if ( result.rows.length === 0 ) return null
+
+            const row = result.rows[0]
+
+            return new User(
+                row.id,
+                row.username,
+                row.email,
+                row.password,
+                row.created_at
+            )
+
+        } catch( error: any ){
+            throw new Error('[UserDatasourcePostgres] - Error al obtener usuario por id', error)
+        }
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        throw new Error("Method not implemented.");
+        try {
+
+            const result = await postgresPool.query(`
+                SELECT *
+                FROM users
+                WHERE email = $1
+            `, [email])
+
+            if ( result.rows.length === 0 ) return null
+
+            const row = result.rows[0]
+
+            return new User(
+                row.id,
+                row.username,
+                row.email,
+                row.password,
+                row.created_at
+            )
+
+        } catch( error: any ) {
+            throw new Error('[UserDatasourcePostgres] - Error al obtener usuario por email', error)
+        }
     }
 
     async searchByUsername(data: SearchUserDto): Promise<User[]> {
-        throw new Error("Method not implemented.");
+        try {
+
+            const result = await postgresPool.query(`
+                SELECT *
+                FROM users
+                WHERE username ILIKE $1
+                LIMIT $2
+            `, [`%${data.query}%`, data.limit ?? 10])
+
+            return result.rows.map(row => (new User(
+                row.id,
+                row.username,
+                row.email,
+                row.password,
+                row.created_at
+            )))
+            
+        } catch( error: any ) {
+             throw new Error('[UserDatasourcePostgres] - Error al buscar usuarios', error)
+        }
     }
-    
+
 }
