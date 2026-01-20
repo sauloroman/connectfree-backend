@@ -1,22 +1,26 @@
-import { Pool } from 'pg'
-import { EnvAdapter } from './config/plugin'
+import { EnvAdapter } from "./config/plugin"
+import { Container } from "./container/container"
+import { Server } from "./presentation/server/server"
+import { ServerConfiguration } from "./presentation/server/server-configuration"
 
-export const postgresPool = new Pool(
-  EnvAdapter.DATABASE_URL
-    ? {
-        connectionString: EnvAdapter.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      }
-    : {
-        host: EnvAdapter.POSTGRESDB_HOST!,
-        port: EnvAdapter.POSTGRESDB_PORT!,
-        user: EnvAdapter.POSTGRESDB_USER!,
-        password: EnvAdapter.POSTGRESDB_PASSWORD!,
-        database: EnvAdapter.POSTGRESDB_NAME!
-      }
-);
-
-(async() => {
-    const result = await postgresPool.query('SELECT NOW()')
-    console.log(result.rows) 
+(async () => {
+  await main()
 })()
+
+async function main() {
+
+  const dependencyInjection = new Container()
+
+  const config = new ServerConfiguration({
+    router: dependencyInjection.appRoutes.routes,
+    publicPath: 'public'
+  })
+
+  const server = new Server({
+    app: config.application,
+    port: EnvAdapter.PORT
+  })
+
+  await server.start()
+
+}

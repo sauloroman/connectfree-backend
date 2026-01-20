@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers";
+import { AuthMiddleware } from "../middlewares";
 
 export class UserRoutes {
 
@@ -15,6 +16,10 @@ export class UserRoutes {
         const router = Router()
 
         router.post('/register', this.controller.register)
+        router.post('/login', this.controller.login )
+
+        router.get('/me', [AuthMiddleware.validateLoggedUser], this.controller.profile)
+        router.get('/search', [AuthMiddleware.validateLoggedUser], this.controller.search)
 
         return router
     }
