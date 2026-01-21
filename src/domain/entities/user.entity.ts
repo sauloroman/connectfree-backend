@@ -1,67 +1,69 @@
+import { RegExp } from "../../config/utils"
+
 export class User {
 
   constructor(
-    private readonly _id: number,
-    private _username: string,
-    private _email: string,
-    private _password: string,
-    private readonly _createdAt: Date = new Date()
+    private readonly id: number,
+    private username: string,
+    private email: string,
+    private password: string,
+    private readonly createdAt: Date = new Date()
   ) {
-    this.username = _username
-    this.email = _email
-    this.password = _password
+    this.username = username
+    this.email = email
+    this.password = password
   }
 
-  get id(): number {
-    if (!this._id || this._id <= 0) {
+  get getId(): number {
+    if (!this.id || this.id <= 0) {
       throw new Error('User ID is invalid')
     }
-    return this._id
+    return this.id
   }
 
-  get username(): string {
-    if (!this._username || this._username.length < 3) {
+  get getUsername(): string {
+    if (!this.username || this.username.length < 3) {
       throw new Error('Username must have at least 3 characters')
     }
-    return this._username
+    return this.username
   }
 
-  get email(): string {
-    if (!this._email.includes('@')) {
+  get getEmail(): string {
+    if (!RegExp.EMAIL_REGEX.test(this.email)) {
       throw new Error('Invalid email format')
     }
-    return this._email
+    return this.email
   }
 
-  get password(): string {
-    if (this._password.length < 6) {
+  get getPassword(): string {
+    if (this.password.length < 6) {
       throw new Error('Password must have at least 6 characters')
     }
-    return this._password
+    return this.password
   }
 
-  get createdAt(): Date {
-    return this._createdAt
+  get getCreatedAt(): Date {
+    return this.createdAt
   }
 
-  set username(value: string) {
+  set getUsername(value: string) {
     if (!value || value.length < 3) {
       throw new Error('Username must have at least 3 characters')
     }
-    this._username = value
+    this.username = value
   }
 
-  set email(value: string) {
+  set getEmail(value: string) {
     if (!value.includes('@')) {
       throw new Error('Invalid email format')
     }
-    this._email = value
+    this.email = value
   }
 
-  set password(value: string) {
+  set getPassword(value: string) {
     if (value.length < 6) {
       throw new Error('Password must have at least 6 characters')
     }
-    this._password = value
+    this.password = value
   }
 }

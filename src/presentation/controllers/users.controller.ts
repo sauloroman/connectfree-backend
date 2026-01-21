@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
-import { UserRepository } from "../../domain/repositories";
 import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, SearchUsersUseCase } from "../../application/use-cases/users";
 import { LoginUserValidator, RegisterUserValidator } from "../validators/users";
 
 export class UserController {
 
-    constructor(private readonly userRepository: UserRepository) { }
+    constructor(
+        private readonly registerUserUseCase: RegisterUserUseCase,
+        private readonly loginUserUseCase: LoginUserUseCase,
+        private readonly getUserByIdUseCase: GetUserByIdUseCase,
+        private readonly searchUsersUseCase: SearchUsersUseCase,
+    ) {}
 
     private sendError(res: Response, errorMessage: string, statusCode?: number) {
         res.status(statusCode ?? 400).json({
@@ -23,8 +27,7 @@ export class UserController {
                 return this.sendError(res, errorMessage, 400)
             }
 
-            const useCase = new RegisterUserUseCase(this.userRepository)
-            const userCreated = await useCase.execute(dto!)
+            const userCreated = await this.registerUserUseCase.execute(dto!)
 
             res.status(201).json({
                 ok: true,
@@ -45,8 +48,7 @@ export class UserController {
                 return this.sendError(res, errorMessage, 400)
             }
 
-            const useCase = new LoginUserUseCase(this.userRepository)
-            const { token, user } = await useCase.execute(dto!)
+            const { token, user } = await this.loginUserUseCase.execute(dto!)
 
             res.status(200).json({
                 ok: true,
@@ -64,8 +66,7 @@ export class UserController {
             
             const userId = req.body.user.id
             
-            const useCase = new GetUserByIdUseCase(this.userRepository)
-            const user = await useCase.execute(userId)
+            const user = await this.getUserByIdUseCase.execute(userId)
 
             res.status(200).json({
                 ok: true,
@@ -80,9 +81,7 @@ export class UserController {
     public search = async ( req: Request, res: Response ) => {
         try {
 
-            const useCase = new SearchUsersUseCase(this.userRepository)
-
-            const users = await useCase.execute({
+            const users = await this.searchUsersUseCase.execute({
                 query: req.query.q as string,
                 limit: req.query.limit ? Number(req.query.limit) : undefined
             })

@@ -1,54 +1,54 @@
 export class Message {
 
   constructor(
-    private readonly _id: number,
-    private readonly _conversationId: number,
-    private readonly _senderId: number,
-    private _content: string,
-    private readonly _createdAt: Date = new Date()
+    private readonly id: number,
+    private readonly conversationId: number,
+    private readonly senderId: number,
+    private content: string,
+    private readonly createdAt: Date = new Date()
   ) {
-    this.content = _content
+    this.content = content
   }
 
-  get id(): number {
-    if (this._id <= 0) {
+  get getId(): number {
+    if (this.id <= 0) {
       throw new Error('Message ID is invalid')
     }
-    return this._id
+    return this.id
   }
 
-  get conversationId(): number {
-    if (this._conversationId <= 0) {
+  get getConversationId(): number {
+    if (this.conversationId <= 0) {
       throw new Error('Conversation ID is invalid')
     }
-    return this._conversationId
+    return this.conversationId
   }
 
-  get senderId(): number {
-    if (this._senderId <= 0) {
+  get getSenderId(): number {
+    if (this.senderId <= 0) {
       throw new Error('Sender ID is invalid')
     }
-    return this._senderId
+    return this.senderId
   }
 
-  get content(): string {
-    if (!this._content || this._content.trim().length === 0) {
+  get getContent(): string {
+    if (!this.content || this.content.trim().length === 0) {
       throw new Error('Message content cannot be empty')
     }
-    return this._content
+    return this.content
   }
 
-  get createdAt(): Date {
-    return this._createdAt
+  get getCreatedAt(): Date {
+    return this.createdAt
   }
 
-  set content(value: string) {
+  set setContent(value: string) {
     if (!value || value.trim().length === 0) {
       throw new Error('Message content cannot be empty')
     }
     if (value.length > 1000) {
       throw new Error('Message is too long')
     }
-    this._content = value.trim()
+    this.content = value.trim()
   }
 }

@@ -1,0 +1,1 @@
+export { AddContactValidator } from './add-contact.validator'

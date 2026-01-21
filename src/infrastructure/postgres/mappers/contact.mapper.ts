@@ -5,7 +5,7 @@ export class ContactMapper {
         return new Contact(
             row.id,
             row.user_id,
-            row.contact_id,
+            row.contact_user_id,
             row.created_at
         )
     }
