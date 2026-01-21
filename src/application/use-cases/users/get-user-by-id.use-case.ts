@@ -9,7 +9,7 @@ export class GetUserByIdUseCase {
         const user = await this.userRepository.getById( userId )
 
         if ( !user ) {
-            throw new Error('[GetUserUseCase] - Usuario no encontrado')
+            throw new Error('Usuario no encontrado')
         }
 
         return user

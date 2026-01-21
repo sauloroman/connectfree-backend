@@ -1,5 +1,5 @@
 import { CreateConversationDto, ConversationBetweenUsersDto } from '../dtos/conversation.dto'
-import { Conversation } from '../entities/conversation.entity'
+import { Conversation } from '../entities'
 
 export abstract class ConversationDatasource {
   abstract create( data: CreateConversationDto ): Promise<Conversation>

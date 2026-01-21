@@ -10,10 +10,10 @@ export class LoginUserUseCase {
     public async execute( data: LoginUserInput ): Promise<LoginUserResult>  {
 
         const user = await this.userRepository.getByEmail(data.email)
-        if ( !user ) throw new Error('[LoginUserUseCase] - Credenciales Invalidas')
+        if ( !user ) throw new Error('Credenciales Invalidas')
 
         const isCorrectPassword = HashAdapter.compare( data.password, user.password )
-        if ( !isCorrectPassword ) throw new Error('[LoginUserUseCase] - Credenciales Invalidas')
+        if ( !isCorrectPassword ) throw new Error('Credenciales Invalidas')
 
         const token = await JwtAdapter.generateJWT({ id: user.id }) as string
 
