@@ -49,7 +49,7 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
             ? ConversationMapper.fromRow(result.rows[0])
             : null
         } catch( error: any ) {
-            throw new Error('[ConversationDatasourcePostgres] - Error al buscar conversación ' + error.message)
+            throw new Error('[ConversationDatasourcePostgres] - Error al buscar conversación: ' + error.message)
         }
     }
 

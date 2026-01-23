@@ -60,7 +60,7 @@ export class ConversationController {
     public getById = async (req: Request, res: Response) => {
         try {
             const userId = req.body.user.id
-            const conversationId = Number(req.query.conversationId)
+            const conversationId = Number(req.params.conversationId)
 
             const conversation = await this.getConversationByIdUseCase.execute(conversationId, userId)
 

@@ -13,7 +13,7 @@ export class ConversationsContainer {
     constructor(){
 
         // Repositorio de PostgreSQL
-        if ( !ContactsContainer.contactsRepository ) {
+        if ( !ConversationsContainer.conversationRepository ) {
             ConversationsContainer.conversationRepository = new ConversationRepositoryImpl( 
                 new ConversationDatasourcePostgres(),
                 new ConversationParticipantDatasourcePostgres() 
