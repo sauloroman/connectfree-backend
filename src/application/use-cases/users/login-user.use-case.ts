@@ -12,10 +12,10 @@ export class LoginUserUseCase {
         const user = await this.userRepository.getByEmail(data.email)
         if ( !user ) throw new Error('Credenciales Invalidas')
 
-        const isCorrectPassword = HashAdapter.compare( data.password, user.password )
+        const isCorrectPassword = HashAdapter.compare( data.password, user.getPassword )
         if ( !isCorrectPassword ) throw new Error('Credenciales Invalidas')
 
-        const token = await JwtAdapter.generateJWT({ id: user.id }) as string
+        const token = await JwtAdapter.generateJWT({ id: user.getId }) as string
 
         return {
             token,

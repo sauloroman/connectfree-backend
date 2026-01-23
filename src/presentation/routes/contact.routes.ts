@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ContactsController } from "../controllers/contacts.controller";
-import { AuthMiddleware } from "../middlewares";
+import { AuthMiddleware, ParamsMiddleware } from "../middlewares";
 
 export class ContactRoutes {
 
@@ -19,7 +19,7 @@ export class ContactRoutes {
 
         router.post('/', this.controller.add)
         router.get('/', this.controller.list )
-        router.delete('/:contactUserId', this.controller.remove )
+        router.delete('/:contactUserId', [ParamsMiddleware.isIdValid('contactUserId')], this.controller.remove )
 
         return router   
     }

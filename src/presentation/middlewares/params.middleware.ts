@@ -2,10 +2,10 @@ import { NextFunction, Request, Response } from "express";
 
 export class ParamsMiddleware {
 
-    public static isContactUserIdValid() {
+    public static isIdValid( idName: string ) {
         return ( req: Request, res: Response, next: NextFunction ) => {
 
-            const contactUserId = Number(req.params.contactUserId)
+            const contactUserId = Number(req.params[`${idName}`])
 
             if ( isNaN(contactUserId) ) {
                 return res.status(400).json({

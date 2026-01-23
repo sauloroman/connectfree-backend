@@ -7,16 +7,19 @@ import { ContactRoutes } from "../presentation/routes";
 export class ContactsContainer {
 
     public readonly contactRoutes: ContactRoutes   
+    public static contactsRepository: ContactRepositoryImpl
 
     constructor(){
 
         // Repositorio de PostgreSQL
-        const contactsRepository = new ContactRepositoryImpl( new ContactDatasourcePostgres() )
+        if ( !ContactsContainer.contactsRepository ) {
+            ContactsContainer.contactsRepository = new ContactRepositoryImpl( new ContactDatasourcePostgres() )
+        }
 
         // Casos de uso
-        const addContactUC = new AddContactUseCase( contactsRepository )
-        const removeContactUC = new RemoveContactUseCase( contactsRepository )
-        const getUserContactsUC = new GetUserContactsUseCase( contactsRepository )
+        const addContactUC = new AddContactUseCase( ContactsContainer.contactsRepository )
+        const removeContactUC = new RemoveContactUseCase( ContactsContainer.contactsRepository )
+        const getUserContactsUC = new GetUserContactsUseCase( ContactsContainer.contactsRepository )
 
         // Controlador
         const contactController = new ContactsController(

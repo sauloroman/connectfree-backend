@@ -7,16 +7,19 @@ import { UserRoutes } from "../presentation/routes/user.routes";
 export class UserContainer {
 
     public readonly userRoutes: UserRoutes
+    public static userRepository: UserRepositoryImpl
 
     constructor(){
         // Repositorio de PostgreSQL
-        const userRepository = new UserRepositoryImpl( new UserDatasourcePostgres() )
+        if ( !UserContainer.userRepository ) {
+            UserContainer.userRepository = new UserRepositoryImpl( new UserDatasourcePostgres() )
+        }
 
         // Casos de uso
-        const registerUserUC = new RegisterUserUseCase( userRepository )
-        const loginUserUC = new LoginUserUseCase( userRepository )
-        const getUserByIdUC = new GetUserByIdUseCase( userRepository )
-        const searchUsersUC = new SearchUsersUseCase( userRepository )
+        const registerUserUC = new RegisterUserUseCase( UserContainer.userRepository )
+        const loginUserUC = new LoginUserUseCase( UserContainer.userRepository )
+        const getUserByIdUC = new GetUserByIdUseCase( UserContainer.userRepository )
+        const searchUsersUC = new SearchUsersUseCase( UserContainer.userRepository )
 
         // Controlador
         const userController = new UserController(
