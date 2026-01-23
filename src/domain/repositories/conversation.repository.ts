@@ -5,4 +5,5 @@ export abstract class ConversationRepository {
   abstract createOrGet( data: ConversationBetweenUsersDto ): Promise<Conversation>
   abstract getById( conversationId: number ): Promise<Conversation | null>
   abstract getByUser( userId: number ): Promise<Conversation[]>
+  abstract isUserInConversation(conversationId: number, userId: number): Promise<boolean>
 }

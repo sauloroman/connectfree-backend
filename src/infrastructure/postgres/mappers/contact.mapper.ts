@@ -6,7 +6,9 @@ export class ContactMapper {
             row.id,
             row.user_id,
             row.contact_user_id,
-            row.created_at
+            row.created_at,
+            row.is_active,
+            row.deleted_at
         )
     }
 }

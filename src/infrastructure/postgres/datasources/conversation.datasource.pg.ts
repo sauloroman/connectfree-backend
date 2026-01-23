@@ -32,49 +32,66 @@ export class ConversationDatasourcePostgres extends ConversationDatasource {
 
         } catch (error: any) {
             await client.query('ROLLBACK')
-            throw new Error('[ConversationDatasourcePostgres] - Error al crear conversación', error)
+            throw new Error('[ConversationDatasourcePostgres] - Error al crear conversación ' + error.message)
         } finally {
             client.release()
         }
     }
 
     async findById(conversationId: number): Promise<Conversation | null> {
-        const result = await postgresPool.query(
-            `SELECT * FROM conversations WHERE id = $1`,
-            [conversationId]
-        )
-
-        return result.rowCount
-        ? ConversationMapper.fromRow(result.rows[0])
-        : null
+        try {
+            const result = await postgresPool.query(
+                `SELECT * FROM conversations WHERE id = $1`,
+                [conversationId]
+            )
+    
+            return result.rows.length > 0
+            ? ConversationMapper.fromRow(result.rows[0])
+            : null
+        } catch( error: any ) {
+            throw new Error('[ConversationDatasourcePostgres] - Error al buscar conversación ' + error.message)
+        }
     }
 
-    async findConversationBetweenUsers(
-        data: ConversationBetweenUsersDto
-    ): Promise<Conversation | null> {
-        const result = await postgresPool.query(
-        `
-            SELECT c.*
-            FROM conversations c
-                JOIN conversation_participants p1 ON p1.conversation_id = c.id
-                JOIN conversation_participants p2 ON p2.conversation_id = c.id
-            WHERE p1.user_id = $1 AND p2.user_id = $2
-        `, [data.userAId, data.userBId])
-
-        return result.rowCount
-        ? ConversationMapper.fromRow(result.rows[0])
-        : null
+    async findConversationBetweenUsers( data: ConversationBetweenUsersDto ): Promise<Conversation | null> {
+        try {
+            const result = await postgresPool.query(
+            `
+                SELECT c.*
+                FROM conversations c
+                    JOIN conversation_participants p1 ON p1.conversation_id = c.id
+                    JOIN conversation_participants p2 ON p2.conversation_id = c.id
+                WHERE p1.user_id = $1 AND p2.user_id = $2
+                AND (
+                    SELECT COUNT(*) FROM conversation_participants
+                    WHERE conversation_id = c.id
+                ) = 2
+                LIMIT 1
+            `, [data.userAId, data.userBId])
+    
+            return result.rows.length > 0
+            ? ConversationMapper.fromRow(result.rows[0])
+            : null
+        } catch(error: any) {
+            throw new Error('[ConversationDatasourcePostgres] - Error al buscar conversación entre usuarios: ' + error.message)
+        }
+        
     }
 
     async getUserConversations(userId: number): Promise<Conversation[]> {
-        const result = await postgresPool.query(
-        `
-            SELECT c.*
-            FROM conversations c
-                JOIN conversation_participants cp ON cp.conversation_id = c.id
-            WHERE cp.user_id = $1
-        `, [userId] )
-
-        return result.rows.map( ConversationMapper.fromRow)
+        try {
+            const result = await postgresPool.query(
+            `
+                SELECT DISTINCT c.*
+                FROM conversations c
+                    INNER JOIN conversation_participants cp ON cp.conversation_id = c.id
+                WHERE cp.user_id = $1
+                ORDER BY c.created_at DESC
+            `, [userId] )
+    
+            return result.rows.map( ConversationMapper.fromRow)
+        } catch( error: any ) {
+            throw new Error('[ConversationDatasourcePostgres] - Error al obtener conversaciones del usuario: ' + error.message)
+        }
     }
 }

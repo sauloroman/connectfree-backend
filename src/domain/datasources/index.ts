@@ -1,4 +1,5 @@
 export { ContactDatasource } from './contact.datasource'
 export { ConversationDatasource } from './conversation.datasource'
+export { ConversationParcipantDatasource } from './conversation-participant.datasource'
 export { MessageDatasource } from './message.datasource'
 export { UserDatasource } from './user.datasource'

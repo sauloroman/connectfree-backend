@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     user_id INT NOT NULL,
     contact_user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT TRUE,
+    deleted_at TIMESTAMP NULL,
 
     CONSTRAINT fk_contacts_user
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
