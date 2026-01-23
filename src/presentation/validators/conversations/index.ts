@@ -1,0 +1,1 @@
+export { CreateConversationValidator } from './create-conversation.validator'
