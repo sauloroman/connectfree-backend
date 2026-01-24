@@ -1,0 +1,1 @@
+export { SendMessageValidator } from './send-message.validator'

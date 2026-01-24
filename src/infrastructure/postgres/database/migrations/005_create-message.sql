@@ -11,3 +11,6 @@ CREATE TABLE IF NOT EXISTS messages (
   CONSTRAINT fk_message_sender
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_messages_conversation ON messages(conversation_id);
+CREATE INDEX idx_messages_created_at ON messages(created_at DESC);
