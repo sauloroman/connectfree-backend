@@ -1,12 +1,14 @@
 import { ConversationRepository, MessageRepository } from "../../../domain/repositories";
 import { SendMessageDto } from "../../../domain/dtos/message.dto";
 import { Message } from "../../../domain/entities";
+import { SocketGateway } from "../../../domain/gateways/socket.gateway";
 
 export class SendMessageUseCase {
 
   constructor( 
     private readonly messageRepository: MessageRepository,
     private readonly conversationRepository: ConversationRepository,
+    private readonly socketGateway?: SocketGateway
   ) {}
 
   async execute(data: SendMessageDto): Promise<Message> {
@@ -30,10 +32,24 @@ export class SendMessageUseCase {
       throw new Error('No tienes permiso para enviar mensajes en esta conversacion.')
     }
 
-    return this.messageRepository.send({
+    const message = this.messageRepository.send({
       conversationId,
       senderId,
       content: content.trim()
     });
+
+    if ( this.socketGateway ) {
+      await this.socketGateway.emitToConversation(conversationId, 'message:new', {
+        message: {
+          id: (await message).getId,
+          conversationId: (await message).getConversationId,
+          senderId: (await message).getSenderId,
+          content: (await message).getContent,
+          createdAt: (await message).getCreatedAt
+        }
+      })
+    }
+
+    return message
   }
 }

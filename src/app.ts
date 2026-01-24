@@ -23,4 +23,8 @@ async function main() {
 
   await server.start()
 
+  new Container(server.httpServerInstance)
+
+  console.log('Aplicación iniciada')
+
 }
