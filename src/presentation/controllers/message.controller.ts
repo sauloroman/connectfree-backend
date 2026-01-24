@@ -22,7 +22,7 @@ export class MessageController {
     public send = async ( req: Request, res: Response ) => {
         try {
             const userId = req.body.user.id
-            const conversationId = Number(req.query.conversationId)
+            const conversationId = Number(req.params.conversationId)
             const [ dto, errorMessage ] = SendMessageValidator.validate(req.body)
 
             if ( errorMessage ) {

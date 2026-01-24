@@ -23,7 +23,7 @@ export class AppRoutes {
         router.use('/api/users', this.userRoutes.routes)
         router.use('/api/contacts', this.contactRoutes.routes)
         router.use('/api/conversations', this.conversationRoutes.routes)
-        router.use('/api/messages', this.messageRoutes.routes)
+        router.use('/api', this.messageRoutes.routes)
 
         return router
     }

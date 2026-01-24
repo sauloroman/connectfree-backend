@@ -76,7 +76,7 @@ export class MessageDatasourcePostgres implements MessageDatasource {
             const result = await postgresPool.query(`
               SELECT * FROM messages
               WHERE conversation_id = $1
-              ORDER BY created_at DESC
+              ORDER BY created_at ASC
               LIMIT $2 OFFSET $3
             `, [ data.conversationId, data.limit ?? 50, data.offset ?? 0])
 
