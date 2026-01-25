@@ -19,7 +19,6 @@ export class ContactsController {
 
     public add = async (req: Request, res: Response) => {
         try {
-
             const userId = req.body.user.id
             const [ contactUserId, errorMessage ] = AddContactValidator.validate( req.body )
 

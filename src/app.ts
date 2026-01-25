@@ -9,10 +9,8 @@ import { ServerConfiguration } from "./presentation/server/server-configuration"
 
 async function main() {
 
-  const dependencyInjection = new Container()
-
   const config = new ServerConfiguration({
-    router: dependencyInjection.appRoutes.routes,
+    router: new Container().appRoutes.routes,
     publicPath: 'public'
   })
 
@@ -21,10 +19,12 @@ async function main() {
     port: EnvAdapter.PORT
   })
 
-  await server.start()
-
   new Container(server.httpServerInstance)
 
-  console.log('Aplicación iniciada')
+  await server.start()
+
+  console.log('Aplicación iniciada correctamente')
+  console.log(`REST API: http://localhost:${EnvAdapter.PORT}/api`)
+  console.log(`Socket.IO: http://localhost:${EnvAdapter.PORT}`)
 
 }

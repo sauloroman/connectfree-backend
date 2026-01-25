@@ -5,7 +5,11 @@ export class AuthMiddleware {
 
     public static validateLoggedUser() {
         return async ( req: Request, res: Response, next: NextFunction ) => {
-            if ( req.method === 'GET' || req.method === 'PATCH' || req.method === 'DELETE') {
+            if ( 
+                req.method === 'GET' || 
+                req.method === 'PATCH' || 
+                req.method === 'DELETE'
+            ) {
                 req.body = {}
             }
 
@@ -22,7 +26,7 @@ export class AuthMiddleware {
             }
 
             try {
-                const payload = await JwtAdapter.validateToken<{id: string}>(token) 
+                const payload = await JwtAdapter.validateToken<{id: string}>(token as string) 
                 req.body.user = { id: payload?.id ?? '' }
 
                 next()

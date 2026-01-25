@@ -4,7 +4,9 @@ import { ContactRepository } from "../../../domain/repositories";
 
 export class AddContactUseCase {
 
-    constructor( private readonly contactRepository: ContactRepository){}
+    constructor( 
+        private readonly contactRepository: ContactRepository,
+    ){}
 
     public async execute( data: AddContactDto ): Promise<Contact> {
 

@@ -1,35 +1,35 @@
 import { CreateOrGetConversationUseCase, GetConversationByIdUseCase, GetUserConversationsUseCase } from "../application/use-cases/conversations";
-import { ConversationDatasourcePostgres, ConversationParticipantDatasourcePostgres } from "../infrastructure/postgres/datasources";
-import { ConversationRepositoryImpl } from "../infrastructure/postgres/repositories";
+import { ContactDatasourcePostgres, ConversationDatasourcePostgres, ConversationParticipantDatasourcePostgres } from "../infrastructure/postgres/datasources";
+import { ContactRepositoryImpl, ConversationRepositoryImpl } from "../infrastructure/postgres/repositories";
 import { ConversationController } from "../presentation/controllers/conversation.controller";
 import { ConversationRoutes } from "../presentation/routes";
-import { ContactsContainer } from "./contacts.container";
 
 export class ConversationsContainer {
 
     public readonly conversationRoutes: ConversationRoutes
-    public static conversationRepository: ConversationRepositoryImpl
 
     constructor(){
 
         // Repositorio de PostgreSQL
-        if ( !ConversationsContainer.conversationRepository ) {
-            ConversationsContainer.conversationRepository = new ConversationRepositoryImpl( 
-                new ConversationDatasourcePostgres(),
-                new ConversationParticipantDatasourcePostgres() 
-            ) 
-        }
+        const conversationRepository = new ConversationRepositoryImpl( 
+            new ConversationDatasourcePostgres(),
+            new ConversationParticipantDatasourcePostgres() 
+        ) 
 
+        const contactsRepository = new ContactRepositoryImpl(
+            new ContactDatasourcePostgres()
+        )
+        
         // Casos de uso
         const createOrGetConversationUC = new CreateOrGetConversationUseCase(
-            ConversationsContainer.conversationRepository,
-            ContactsContainer.contactsRepository
+            conversationRepository,
+            contactsRepository
         )
         const getConversationByIdUC = new GetConversationByIdUseCase(
-            ConversationsContainer.conversationRepository
+            conversationRepository
         )
         const getUserConversationsUC = new GetUserConversationsUseCase(
-            ConversationsContainer.conversationRepository
+            conversationRepository
         )
 
         // Controlador

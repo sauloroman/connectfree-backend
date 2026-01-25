@@ -12,6 +12,7 @@ export class ContactDatasourcePostgres implements ContactDatasource {
                 SELECT * FROM contacts
                 WHERE user_id = $1 AND contact_user_id = $2
             `, [data.userId, data.contactUserId])
+
             
             if ( existing.rows.length > 0 ) {
                 const result = await postgresPool.query(

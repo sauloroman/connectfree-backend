@@ -20,7 +20,7 @@ export class UserController {
 
     public register = async (req: Request, res: Response) => {
         try {
-
+            
             const [dto, errorMessage] = RegisterUserValidator.validate(req.body)
             
             if (errorMessage) {
