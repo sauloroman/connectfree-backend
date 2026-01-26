@@ -1,4 +1,4 @@
-import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, SearchUsersUseCase } from "../application/use-cases/users";
+import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, RenewSessionUseCase, SearchUsersUseCase } from "../application/use-cases/users";
 import { UserDatasourcePostgres } from "../infrastructure/postgres/datasources";
 import { UserRepositoryImpl } from "../infrastructure/postgres/repositories";
 import { UserController } from "../presentation/controllers";
@@ -17,13 +17,15 @@ export class UserContainer {
         const loginUserUC = new LoginUserUseCase( userRepository )
         const getUserByIdUC = new GetUserByIdUseCase( userRepository )
         const searchUsersUC = new SearchUsersUseCase( userRepository )
+        const renewSessionUC = new RenewSessionUseCase( userRepository )
 
         // Controlador
         const userController = new UserController(
             registerUserUC,
             loginUserUC,
             getUserByIdUC,
-            searchUsersUC
+            searchUsersUC,
+            renewSessionUC
         )
 
         // Rutas

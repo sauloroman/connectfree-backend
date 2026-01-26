@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, SearchUsersUseCase } from "../../application/use-cases/users";
+import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, RenewSessionUseCase, SearchUsersUseCase } from "../../application/use-cases/users";
 import { LoginUserValidator, RegisterUserValidator } from "../validators/users";
 
 export class UserController {
@@ -9,6 +9,7 @@ export class UserController {
         private readonly loginUserUseCase: LoginUserUseCase,
         private readonly getUserByIdUseCase: GetUserByIdUseCase,
         private readonly searchUsersUseCase: SearchUsersUseCase,
+        private readonly renewSessionUseCase: RenewSessionUseCase
     ) {}
 
     private sendError(res: Response, errorMessage: string, statusCode?: number) {
@@ -16,6 +17,22 @@ export class UserController {
             ok: false,
             message: errorMessage
         })
+    }
+
+    public renewAuth = async ( req: Request, res: Response ) => {
+        try {
+            
+            const {tokenId} = req.params
+            const user = await this.renewSessionUseCase.execute(tokenId as string)
+
+            res.status(200).json({
+                ok: true,
+                user,
+            })
+            
+        } catch( error: any ) {
+            this.sendError(res, error.message, 401)
+        }
     }
 
     public register = async (req: Request, res: Response) => {
