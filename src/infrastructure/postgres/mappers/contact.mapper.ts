@@ -8,6 +8,8 @@ export class ContactMapper {
             row.contact_user_id,
             row.created_at,
             row.is_active,
+            row.username,
+            row.email,
             row.deleted_at
         )
     }

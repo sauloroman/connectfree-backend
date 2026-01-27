@@ -66,7 +66,6 @@ export class ContactsController {
         try {
 
             const userId = req.body.user.id
-
             const contacts = await this.getUserContactsUseCase.execute(userId)
 
             res.status(200).json({

@@ -6,7 +6,9 @@ export class Contact {
     private readonly contactUserId: number,
     private readonly createdAt: Date = new Date(),
     private readonly isActive: boolean,
-    private readonly deletedAt?: Date | null
+    private readonly userName: string,
+    private readonly email: string,
+    private readonly deletedAt?: Date | null,
   ) {
     if (userId === contactUserId) {
       throw new Error('User cannot add himself as contact')
@@ -18,6 +20,14 @@ export class Contact {
       throw new Error('Contact ID is invalid')
     }
     return this.id
+  }
+
+  get getUsername(): string {
+    return this.userName
+  }
+
+  get getEmail(): string {
+    return this.email
   }
 
   get getUserId(): number {

@@ -10,7 +10,7 @@ export class RegisterUserUseCase {
     public async execute( data: CreateUserDto ): Promise<User> {
 
         const exists = await this.userRepository.getByEmail( data.email )
-        if ( exists ) throw new Error('Error al registrar usuario')
+        if ( exists ) throw new Error('El correo ya existe. Intenta con otro')
 
         const hashedPassword = HashAdapter.hash(data.password)
 
