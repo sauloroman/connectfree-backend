@@ -1,6 +1,6 @@
 import { Server as SocketIOServer} from 'socket.io'
 import { SocketGateway } from "../../domain/gateways/socket.gateway";
-import { ConversationParcipantDatasource } from '../../domain/datasources';
+import { ContactDatasource, ConversationParcipantDatasource } from '../../domain/datasources';
 
 export class SocketIOGateway implements SocketGateway {
 
@@ -8,10 +8,16 @@ export class SocketIOGateway implements SocketGateway {
     private userSocketMap: Map<number, string> = new Map()
     private socketUserMap: Map<string, number> = new Map()
     private readonly participantDatasource: ConversationParcipantDatasource
+    private readonly contactDatasource: ContactDatasource
 
-    constructor(io: SocketIOServer, participantDatasource: ConversationParcipantDatasource ){
+    constructor(
+        io: SocketIOServer, 
+        participantDatasource: ConversationParcipantDatasource,
+        contactDatasource: ContactDatasource 
+    ){
         this.io = io
         this.participantDatasource = participantDatasource
+        this.contactDatasource = contactDatasource
     }
     
     public registerUser( userId: number, socketId: string ): void {
@@ -46,13 +52,23 @@ export class SocketIOGateway implements SocketGateway {
             participants.forEach( par => {
                 this.emitToUser(par.getUserId, event, data)
             })
-
-            console.log(`[SocketIOGateway] Evento '${event}' enviado a conversación ${conversationId}`)
         } catch(error: any) {
             throw new Error(`[SocketIOGateway] Error al emitir la conversación: ${error.message}`)
         }
     }
     
+    public async emitToUserContacts( userId: number, event: string, data: any ): Promise<void> {
+        try {
+            const contacts = await this.contactDatasource.getContactsByUser(userId)
+
+            contacts.forEach( contact => {
+                this.emitToUser(contact.getContactUserId, event, data)
+            })
+        } catch( error: any ) {
+            throw new Error('[SocketIOGateway] - Error al emitir a contactos:', error.message)
+        }
+    }
+
     public getUserSocketId(userId: number): string | null {
         return this.userSocketMap.get(userId) || null
     }
@@ -65,7 +81,7 @@ export class SocketIOGateway implements SocketGateway {
         return this.userSocketMap.has(userId)
     }
     
-    public async getOnlineUsers(): Promise<number[]> {
+    public getOnlineUsers(): number[] {
         return Array.from(this.userSocketMap.keys())
     }
 

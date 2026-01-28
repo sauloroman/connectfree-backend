@@ -3,5 +3,6 @@ export abstract class SocketGateway {
     abstract emitToConversation( conversationId: number, evet: string, data: any ): Promise<void>
     abstract getUserSocketId( userId: number ): string | null
     abstract isUserOnline( userId: number ): Promise<boolean>   
-    abstract getOnlineUsers(): Promise<number[]>
+    abstract getOnlineUsers(): number[]
+    abstract emitToUserContacts(userId: number, event: string, data: any): Promise<void>
 }

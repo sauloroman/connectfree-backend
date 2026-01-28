@@ -1,4 +1,5 @@
 import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, RenewSessionUseCase, SearchUsersUseCase } from "../application/use-cases/users";
+import { SocketGateway } from "../domain/gateways/socket.gateway";
 import { UserDatasourcePostgres } from "../infrastructure/postgres/datasources";
 import { UserRepositoryImpl } from "../infrastructure/postgres/repositories";
 import { UserController } from "../presentation/controllers";
@@ -8,7 +9,8 @@ export class UserContainer {
 
     public readonly userRoutes: UserRoutes
 
-    constructor(){
+    constructor( socketGateway?: SocketGateway ){
+
         // Repositorio de PostgreSQL
         const userRepository = new UserRepositoryImpl( new UserDatasourcePostgres() )
 
@@ -25,7 +27,8 @@ export class UserContainer {
             loginUserUC,
             getUserByIdUC,
             searchUsersUC,
-            renewSessionUC
+            renewSessionUC,
+            socketGateway
         )
 
         // Rutas

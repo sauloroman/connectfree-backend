@@ -27,16 +27,18 @@ export class SocketController {
 
         this.socketGateway.registerUser(userId, socket.id)
 
-        socket.broadcast.emit('user:online', { userId })
+        await this.socketGateway.emitToUserContacts(userId, 'user:online', { userId })
 
         console.log(`[SocketController] Usuario ${userId} conectado.`)  
         
         this.setupEventListeners( socket, userId )
     }
 
-    private handleDisconnect = (socket: Socket, userId: number) => {
+    private handleDisconnect = async (socket: Socket, userId: number) => {
         this.socketGateway.unregisterUser(socket.id)
-        socket.broadcast.emit('user:offline', { userId })
+
+        await this.socketGateway.emitToUserContacts(userId, 'user:offline', { userId })
+        
         console.log(`[SocketController] Usuario ${userId} desconectado`)
     }
 

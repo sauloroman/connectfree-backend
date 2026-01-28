@@ -1,3 +1,4 @@
+import { Router } from "express"
 import { EnvAdapter } from "./config/plugin"
 import { Container } from "./container/container"
 import { Server } from "./presentation/server/server"
@@ -10,7 +11,7 @@ import { ServerConfiguration } from "./presentation/server/server-configuration"
 async function main() {
 
   const config = new ServerConfiguration({
-    router: new Container().appRoutes.routes,
+    router: Router(), 
     publicPath: 'public'
   })
 
@@ -19,12 +20,13 @@ async function main() {
     port: EnvAdapter.PORT
   })
 
-  new Container(server.httpServerInstance)
+  const container = new Container(server.httpServerInstance)
+
+  config.application.use(container.appRoutes.routes)
 
   await server.start()
 
   console.log('Aplicación iniciada correctamente')
   console.log(`REST API: http://localhost:${EnvAdapter.PORT}/api`)
   console.log(`Socket.IO: http://localhost:${EnvAdapter.PORT}`)
-
 }

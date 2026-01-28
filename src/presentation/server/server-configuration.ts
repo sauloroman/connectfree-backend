@@ -14,7 +14,12 @@ export class ServerConfiguration {
     constructor({ router, publicPath = 'public' }: ServerConfigurationOptions) {
         this._app = express()
 
-        this._app.use( cors() )
+        this._app.use( cors({
+            origin: 'http://localhost:5173',
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization']
+        }) )
         this._app.use( express.json() )
         this._app.use( express.urlencoded({ extended: true }))
         this._app.use( express.static( publicPath ) )

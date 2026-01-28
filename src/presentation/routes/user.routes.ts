@@ -18,6 +18,7 @@ export class UserRoutes {
         router.post('/register', this.controller.register)
         router.post('/login', this.controller.login )
         
+        router.get('/online', [AuthMiddleware.validateLoggedUser()], this.controller.getOnlineUsers )
         router.get('/renew-session/:tokenId', [AuthMiddleware.validateLoggedUser()], this.controller.renewAuth )
         router.get('/me', [AuthMiddleware.validateLoggedUser()], this.controller.profile)
         router.get('/search', [AuthMiddleware.validateLoggedUser()], this.controller.search)

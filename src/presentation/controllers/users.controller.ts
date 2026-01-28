@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { GetUserByIdUseCase, LoginUserUseCase, RegisterUserUseCase, RenewSessionUseCase, SearchUsersUseCase } from "../../application/use-cases/users";
 import { LoginUserValidator, RegisterUserValidator } from "../validators/users";
+import { SocketGateway } from "../../domain/gateways/socket.gateway";
 
 export class UserController {
 
@@ -9,7 +10,8 @@ export class UserController {
         private readonly loginUserUseCase: LoginUserUseCase,
         private readonly getUserByIdUseCase: GetUserByIdUseCase,
         private readonly searchUsersUseCase: SearchUsersUseCase,
-        private readonly renewSessionUseCase: RenewSessionUseCase
+        private readonly renewSessionUseCase: RenewSessionUseCase,
+        private readonly socketGateway?: SocketGateway
     ) {}
 
     private sendError(res: Response, errorMessage: string, statusCode?: number) {
@@ -23,11 +25,12 @@ export class UserController {
         try {
             
             const {tokenId} = req.params
-            const user = await this.renewSessionUseCase.execute(tokenId as string)
+            const {user, token} = await this.renewSessionUseCase.execute(tokenId as string)
 
             res.status(200).json({
                 ok: true,
                 user,
+                token
             })
             
         } catch( error: any ) {
@@ -108,6 +111,24 @@ export class UserController {
                 users
             })
         } catch( error: any ){
+            this.sendError(res, error.message, 400)
+        }
+    }
+
+    public getOnlineUsers = ( _req: Request, res: Response ) => {
+        try {
+            if (!this.socketGateway) {
+                return this.sendError(res, 'Servicio de presencia no disponible', 503)
+            }
+
+            const onlineUsers = this.socketGateway.getOnlineUsers()
+
+            res.status(200).json({
+                ok: true,
+                onlineUsers
+            })
+
+        } catch( error: any ) {
             this.sendError(res, error.message, 400)
         }
     }

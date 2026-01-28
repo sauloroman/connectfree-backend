@@ -6,7 +6,7 @@ export class RenewSessionUseCase {
 
     constructor(private readonly userRepository: UserRepository){}
 
-    public async execute( token: string ): Promise<User> {
+    public async execute( token: string ): Promise<{user: User, token: string}> {
         const payload = await JwtAdapter.validateToken<{ id: number }>( token as string )
 
         const user = await this.userRepository.getById(payload?.id ?? 0)
@@ -14,7 +14,12 @@ export class RenewSessionUseCase {
             throw new Error('El token no es válido')
         }
 
-        return user
+        const newToken = await JwtAdapter.generateJWT({ id: user.getId }) as string
+
+        return {
+            user,
+            token: newToken,
+        }
     }
 
 }
